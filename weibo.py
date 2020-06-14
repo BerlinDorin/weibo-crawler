@@ -21,6 +21,14 @@ from tqdm import tqdm
 
 
 class Weibo(object):
+
+    def judge_keyword(self, wb):
+        for keyword in self.keyword_list:
+            text = wb['text']
+            if keyword in text:
+                return True
+        return False
+
     def __init__(self, config):
         """Weibo类初始化"""
         self.validate_config(config)
@@ -42,6 +50,7 @@ class Weibo(object):
             'retweet_video_download']  # 取值范围为0、1, 0代表不下载转发微博视频,1代表下载
         self.cookie = {'Cookie': config.get('cookie')}  # 微博cookie，可填可不填
         self.mysql_config = config.get('mysql_config')  # MySQL数据库连接配置，可以不填
+        self.keyword_list = config.get('keyword_list')
         user_id_list = config['user_id_list']
         if not isinstance(user_id_list, list):
             if not os.path.isabs(user_id_list):
@@ -632,7 +641,7 @@ class Weibo(object):
                     if w['card_type'] == 9:
                         wb = self.get_one_weibo(w)
                         if wb:
-                            if wb['id'] in self.weibo_id_list:
+                            if wb['id'] in self.weibo_id_list or self.judge_keyword(wb) is False:
                                 continue
                             created_at = datetime.strptime(
                                 wb['created_at'], '%Y-%m-%d')
@@ -672,13 +681,7 @@ class Weibo(object):
             print(u'程序出错，错误原因可能为以下两者：\n'
                   u'1.user_id不正确；\n'
                   u'2.此用户微博可能需要设置cookie才能爬取。\n'
-                  u'解决方案：\n'
-                  u'请参考\n'
-                  u'https://github.com/dataabc/weibo-crawler#如何获取user_id\n'
-                  u'获取正确的user_id；\n'
-                  u'或者参考\n'
-                  u'https://github.com/dataabc/weibo-crawler#3程序设置\n'
-                  u'中的“设置cookie”部分设置cookie信息')
+                  )
 
     def get_write_info(self, wrote_count):
         """获取要写入的微博信息"""
@@ -1087,12 +1090,11 @@ def get_config():
         sys.exit(u'当前路径：%s 不存在配置文件config.json' %
                  (os.path.split(os.path.realpath(__file__))[0] + os.sep))
     try:
-        with open(config_path) as f:
+        with open(config_path, encoding='utf-8') as f:
             config = json.loads(f.read())
             return config
     except ValueError:
-        sys.exit(u'config.json 格式不正确，请参考 '
-                 u'https://github.com/dataabc/weibo-crawler#3程序设置')
+        sys.exit(u'config.json 格式不正确')
 
 
 def main():
