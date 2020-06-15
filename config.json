@@ -1,8 +1,8 @@
 {
     "user_id_list": "todolist.txt",
     "filter": 1,
-    "since_date": 5,
-    "write_mode": ["csv"],
+    "since_date": 3,
+    "write_mode": ["mysql"],
     "keyword_list": ["滑坡", "堰塞湖","金沙江","落石","抢险","救灾"],
     "original_pic_download": 0,
     "retweet_pic_download": 0,
@@ -10,10 +10,10 @@
     "retweet_video_download": 0,
     "cookie": "your cookie",
     "mysql_config": {
-        "host": "localhost",
+        "host": "47.92.1.107",
         "port": 3306,
         "user": "root",
-        "password": "123456",
+        "password": "root",
         "charset": "utf8mb4"
     }
 }

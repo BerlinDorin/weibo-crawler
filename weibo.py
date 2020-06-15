@@ -161,10 +161,10 @@ class Weibo(object):
     def user_to_mysql(self):
         """将爬取的用户信息写入MySQL数据库"""
         mysql_config = {
-            'host': 'localhost',
+            'host': '47.92.1.107',
             'port': 3306,
             'user': 'root',
-            'password': '123456',
+            'password': 'root',
             'charset': 'utf8mb4'
         }
         # 创建'weibo'数据库
@@ -186,7 +186,7 @@ class Weibo(object):
                 location varchar(200),
                 education varchar(200),
                 company varchar(200),
-                description varchar(140),
+                description varchar(255),
                 profile_url varchar(200),
                 profile_image_url varchar(200),
                 avatar_hd varchar(200),
@@ -511,24 +511,24 @@ class Weibo(object):
             weibo['user_id'] = ''
             weibo['screen_name'] = ''
         weibo['id'] = int(weibo_info['id'])
-        weibo['bid'] = weibo_info['bid']
+        # weibo['bid'] = weibo_info['bid']
         text_body = weibo_info['text']
         selector = etree.HTML(text_body)
         weibo['text'] = etree.HTML(text_body).xpath('string(.)')
-        weibo['article_url'] = self.get_article_url(selector)
-        weibo['pics'] = self.get_pics(weibo_info)
-        weibo['video_url'] = self.get_video_url(weibo_info)
-        weibo['location'] = self.get_location(selector)
+        # weibo['article_url'] = self.get_article_url(selector)
+        # weibo['pics'] = self.get_pics(weibo_info)
+        # weibo['video_url'] = self.get_video_url(weibo_info)
+        # weibo['location'] = self.get_location(selector)
         weibo['created_at'] = weibo_info['created_at']
-        weibo['source'] = weibo_info['source']
-        weibo['attitudes_count'] = self.string_to_int(
-            weibo_info.get('attitudes_count', 0))
-        weibo['comments_count'] = self.string_to_int(
-            weibo_info.get('comments_count', 0))
-        weibo['reposts_count'] = self.string_to_int(
-            weibo_info.get('reposts_count', 0))
-        weibo['topics'] = self.get_topics(selector)
-        weibo['at_users'] = self.get_at_users(selector)
+        # weibo['source'] = weibo_info['source']
+        # weibo['attitudes_count'] = self.string_to_int(
+        #     weibo_info.get('attitudes_count', 0))
+        # weibo['comments_count'] = self.string_to_int(
+        #     weibo_info.get('comments_count', 0))
+        # weibo['reposts_count'] = self.string_to_int(
+        #     weibo_info.get('reposts_count', 0))
+        # weibo['topics'] = self.get_topics(selector)
+        # weibo['at_users'] = self.get_at_users(selector)
         return self.standardize_info(weibo)
 
     def print_user_info(self):
@@ -559,15 +559,15 @@ class Weibo(object):
         try:
             print(u'微博id：%d' % weibo['id'])
             print(u'微博正文：%s' % weibo['text'])
-            print(u'原始图片url：%s' % weibo['pics'])
-            print(u'微博位置：%s' % weibo['location'])
+            # print(u'原始图片url：%s' % weibo['pics'])
+            # print(u'微博位置：%s' % weibo['location'])
             print(u'发布时间：%s' % weibo['created_at'])
-            print(u'发布工具：%s' % weibo['source'])
-            print(u'点赞数：%d' % weibo['attitudes_count'])
-            print(u'评论数：%d' % weibo['comments_count'])
-            print(u'转发数：%d' % weibo['reposts_count'])
-            print(u'话题：%s' % weibo['topics'])
-            print(u'@用户：%s' % weibo['at_users'])
+            # print(u'发布工具：%s' % weibo['source'])
+            # print(u'点赞数：%d' % weibo['attitudes_count'])
+            # print(u'评论数：%d' % weibo['comments_count'])
+            # print(u'转发数：%d' % weibo['reposts_count'])
+            # print(u'话题：%s' % weibo['topics'])
+            # print(u'@用户：%s' % weibo['at_users'])
             print(u'url：https://m.weibo.cn/detail/%d' % weibo['id'])
         except OSError:
             pass
@@ -904,32 +904,32 @@ class Weibo(object):
     def weibo_to_mysql(self, wrote_count):
         """将爬取的微博信息写入MySQL数据库"""
         mysql_config = {
-            'host': 'localhost',
+            'host': '47.92.1.107',
             'port': 3306,
             'user': 'root',
-            'password': '123456',
+            'password': 'root',
             'charset': 'utf8mb4'
         }
         # 创建'weibo'表
         create_table = """
                 CREATE TABLE IF NOT EXISTS weibo (
                 id varchar(20) NOT NULL,
-                bid varchar(12) NOT NULL,
+                # bid varchar(12) NOT NULL,
                 user_id varchar(20),
                 screen_name varchar(30),
                 text varchar(2000),
-                article_url varchar(100),
-                topics varchar(200),
-                at_users varchar(1000),
-                pics varchar(3000),
-                video_url varchar(1000),
-                location varchar(100),
+                # article_url varchar(100),
+                # topics varchar(200),
+                # at_users varchar(1000),
+                # pics varchar(3000),
+                # video_url varchar(1000),
+                # location varchar(100),
                 created_at DATETIME,
-                source varchar(30),
-                attitudes_count INT,
-                comments_count INT,
-                reposts_count INT,
-                retweet_id varchar(20),
+                # source varchar(30),
+                # attitudes_count INT,
+                # comments_count INT,
+                # reposts_count INT,
+                # retweet_id varchar(20),
                 PRIMARY KEY (id)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"""
         self.mysql_create_table(mysql_config, create_table)
@@ -943,10 +943,10 @@ class Weibo(object):
             if 'retweet' in w:
                 w['retweet']['retweet_id'] = ''
                 retweet_list.append(w['retweet'])
-                w['retweet_id'] = w['retweet']['id']
+                # w['retweet_id'] = w['retweet']['id']
                 del w['retweet']
-            else:
-                w['retweet_id'] = ''
+            # else:
+            #     w['retweet_id'] = ''
             weibo_list.append(w)
         # 在'weibo'表中插入或更新微博数据
         self.mysql_insert(mysql_config, 'weibo', retweet_list)
