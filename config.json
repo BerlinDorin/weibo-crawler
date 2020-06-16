@@ -1,7 +1,7 @@
 {
     "user_id_list": "todolist.txt",
     "filter": 1,
-    "since_date": 3,
+    "since_date": "2015-01-01",
     "write_mode": ["mysql"],
     "keyword_list": ["滑坡", "堰塞湖","金沙江","落石","抢险","救灾"],
     "original_pic_download": 0,
