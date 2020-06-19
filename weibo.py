@@ -641,7 +641,7 @@ class Weibo(object):
                     if w['card_type'] == 9:
                         wb = self.get_one_weibo(w)
                         if wb:
-                            if wb['id'] in self.weibo_id_list or self.judge_keyword(wb) is False:
+                            if wb['id'] in self.weibo_id_list:
                                 continue
                             created_at = datetime.strptime(
                                 wb['created_at'], '%Y-%m-%d')
@@ -932,8 +932,33 @@ class Weibo(object):
                 # retweet_id varchar(20),
                 PRIMARY KEY (id)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"""
+
+        # 创建'weiboKeyword'表
+        create_table_keyword = """
+                        CREATE TABLE IF NOT EXISTS weiboKeyword (
+                        id varchar(20) NOT NULL,
+                        # bid varchar(12) NOT NULL,
+                        user_id varchar(20),
+                        screen_name varchar(30),
+                        text varchar(2000),
+                        # article_url varchar(100),
+                        # topics varchar(200),
+                        # at_users varchar(1000),
+                        # pics varchar(3000),
+                        # video_url varchar(1000),
+                        # location varchar(100),
+                        created_at DATETIME,
+                        # source varchar(30),
+                        # attitudes_count INT,
+                        # comments_count INT,
+                        # reposts_count INT,
+                        # retweet_id varchar(20),
+                        PRIMARY KEY (id)
+                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"""
         self.mysql_create_table(mysql_config, create_table)
+        self.mysql_create_table(mysql_config, create_table_keyword)
         weibo_list = []
+        weibo_keyword_list = []
         retweet_list = []
         if len(self.write_mode) > 1:
             info_list = copy.deepcopy(self.weibo[wrote_count:])
@@ -948,9 +973,13 @@ class Weibo(object):
             # else:
             #     w['retweet_id'] = ''
             weibo_list.append(w)
+            if self.judge_keyword(w) is True:
+                weibo_keyword_list.append(w)
+
         # 在'weibo'表中插入或更新微博数据
-        self.mysql_insert(mysql_config, 'weibo', retweet_list)
+        # self.mysql_insert(mysql_config, 'weibo', retweet_list)
         self.mysql_insert(mysql_config, 'weibo', weibo_list)
+        self.mysql_insert(mysql_config, 'weiboKeyword', weibo_keyword_list)
         print(u'%d条微博写入MySQL数据库完毕' % self.got_count)
 
     def update_user_config_file(self, user_config_file_path):
